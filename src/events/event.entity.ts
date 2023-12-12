@@ -20,11 +20,18 @@ export class Event extends Model {
     allowNull: false
   })
   id: number;
+
   @Column({
     type: DataType.INTEGER,
     allowNull: false
   })
   organizationId: number;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false
+  })
+  CategoryId: number;
 
   @AllowNull(false)
   @Column
@@ -45,6 +52,10 @@ export class Event extends Model {
   @AllowNull(false)
   @Column
   time: string;
+
+  @AllowNull(false)
+  @Column
+  thumbnail: string;
 
   @Column({
     type: DataType.DATE,

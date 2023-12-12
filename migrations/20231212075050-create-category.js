@@ -1,37 +1,32 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Events', {
+    /**
+     * Add altering commands here.
+     *
+     * Example:
+     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
+     */
+    await queryInterface.createTable('Categories', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id: {
-        type: Sequelize.INTEGER
-      },
-      organizationId: {
-        type: Sequelize.INTEGER
-      },
-      eventName: {
+      name: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      location: {
+      icon: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      description: {
+      type: {
+        allowNull: false,
         type: Sequelize.STRING
-      },
-      note: {
-        type: Sequelize.STRING
-      },
-      time: {
-        type: Sequelize.STRING
-      },
-      organizationDate: {
-        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,
@@ -43,7 +38,14 @@ module.exports = {
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Events');
+    /**
+     * Add reverting commands here.
+     *
+     * Example:
+     * await queryInterface.dropTable('users');
+     */
+    await queryInterface.dropTable('Categories');
   }
 };

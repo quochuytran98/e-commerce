@@ -24,6 +24,9 @@ export class EventService {
     await this.eventModel.update(eventData, { where: { id } });
     return this.eventModel.findByPk(id);
   }
+  async findMany(): Promise<Event[]> {
+    return this.eventModel.findAll();
+  }
 
   async remove(id: number): Promise<void> {
     await this.eventModel.destroy({ where: { id } });

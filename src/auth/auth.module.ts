@@ -9,12 +9,12 @@ import { AccountModule } from '../account/account.module'; // Thêm dòng này
   imports: [
     JwtModule.register({
       secret: 'my-secret',
-      signOptions: { expiresIn: '7d' },
+      signOptions: { expiresIn: '7d' }
     }),
-    AccountModule, // Thêm AccountModule vào đây
+    AccountModule // Thêm AccountModule vào đây
   ],
   controllers: [AuthController],
   providers: [PasswordService],
-  exports: [PasswordService],
+  exports: [PasswordService]
 })
 export class AuthModule {}
