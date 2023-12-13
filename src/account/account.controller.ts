@@ -8,8 +8,8 @@ export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   @Get()
-  findAll(): Promise<Account[]> {
-    return this.accountService.findAll();
+  findAll(@Body() accountData: any): Promise<Account[]> {
+    return this.accountService.findAll(accountData);
   }
 
   @Get(':id')

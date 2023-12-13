@@ -6,6 +6,8 @@ import { PasswordService } from './password.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 import { RegisterAccountResponse } from './interfaces/register-account.interface';
 
+import { Public } from '../decorators/public.decorator';
+
 @Controller('v1/auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
@@ -15,6 +17,7 @@ export class AuthController {
     private readonly jwtService: JwtService
   ) {}
 
+  @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{ token: string }> {
     try {
@@ -38,14 +41,15 @@ export class AuthController {
         email: accountInfo.email,
         fullName: accountInfo.fullName
       };
-      const token = this.jwtService.sign(infoSign);
+      const token = await this.jwtService.signAsync(infoSign, { secret: 'javainuse-secret-key' });
 
-      return { token };
+      return { token: token };
     } catch (error) {
       // Xử lý lỗi xác thực
       throw new HttpException({ message: 'Authentication failed', errors: error }, HttpStatus.UNAUTHORIZED);
     }
   }
+
   @Post('register')
   async register(@Body() registerAccountDto: RegisterDto): Promise<RegisterAccountResponse> {
     const result: RegisterAccountResponse = {

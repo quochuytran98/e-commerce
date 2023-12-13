@@ -22,7 +22,7 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
-  @Get()
+  @Post()
   async findMany(): Promise<Categories[]> {
     return this.categoriesService.findMany();
   }

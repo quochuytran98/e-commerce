@@ -17,7 +17,9 @@ export class Event extends Model {
   @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    allowNull: false
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true
   })
   id: number;
 
@@ -31,7 +33,7 @@ export class Event extends Model {
     type: DataType.INTEGER,
     allowNull: false
   })
-  CategoryId: number;
+  categoryId: number;
 
   @AllowNull(false)
   @Column

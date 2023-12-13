@@ -11,7 +11,9 @@ export class EventService {
   ) {}
 
   async create(createEventDto: Partial<Event>): Promise<Event> {
-    return this.eventModel.create(createEventDto);
+    const result = await this.eventModel.create(createEventDto);
+    const plainResult = result.get({ plain: true });
+    return plainResult;
   }
   async findAll(): Promise<Event[]> {
     return this.eventModel.findAll();

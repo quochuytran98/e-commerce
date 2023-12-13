@@ -1,41 +1,73 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+// crypto.middleware.ts
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from 'src/interface/authRequest.interface';
+import { AccountService } from '../account/account.service';
+
 import { MeAPI } from '../utils/meAPI.util';
 
 @Injectable()
 export class CryptoMiddleware implements NestMiddleware {
-  constructor(private readonly meAPI: MeAPI) {}
+  private meAPI: MeAPI | undefined; // Lưu trữ phiên bản của MeAPI
 
-  use(req: Request, res: Response, next: NextFunction) {
+  constructor(private readonly accountService: AccountService) {}
+
+  public getMeAPI(): MeAPI {
+    if (!this.meAPI) {
+      this.meAPI = new MeAPI({
+        isSecurity: true,
+        publicKey:
+          '-----BEGIN PUBLIC KEY-----\n' +
+          'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK3Q4SEa/agtMKo/4uUI4bUc5r7DnTpU\n' +
+          'qsytYYfZ4XUxVv7FegXsvCcmunvvpbhbEWIZT893XZCz6RMjyM6W77ECAwEAAQ==\n' +
+          '-----END PUBLIC KEY-----\n',
+
+        privateKey:
+          '-----BEGIN RSA PRIVATE KEY-----' +
+          ' MIIBOwIBAAJBAK3Q4SEa/agtMKo/4uUI4bUc5r7DnTpUqsytYYfZ4XUxVv7FegXs\n' +
+          ' vCcmunvvpbhbEWIZT893XZCz6RMjyM6W77ECAwEAAQJABERxkoeAHMXnQPbKkkby\n' +
+          ' i6jG/X39+TWk79t93oD56Q+fk61wyj+z6KjY5toPjO4e+dMaEqmCRpwrrSwdP9FC\n' +
+          ' lQIhAPRyH27cKW5LwA1ms7AZWUSNJzVgL6SqjHs791+XNeQTAiEAtggcgKHPDYVd\n' +
+          ' MxjmTARABm++F5u8rKEICi+rT0sG7asCIQCWDqSbIk3QpnGsCFrQBI+XFGt4SaaV\n' +
+          '  mBiK4gH2TVXIvwIgUUbB4zVcS782Y/BEM8DaDYWrLMNetP2Zp2KtbNQlHc0CIQCx\n' +
+          ' EEPqJjmWpYS8Q4SaCfL8QEOiwelHLeKXWubdcv1esQ==\n' +
+          '-----END RSA PRIVATE KEY-----',
+        'x-api-client': '057036251967'
+      });
+    }
+    return this.meAPI;
+  }
+
+  async use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
-      if (this.meAPI.isSecurity) {
-        const {
-          'x-api-action': xAPIAction,
-          //   method,
-          'x-api-client': xAPIClient,
-          'x-api-key': xAPIKey,
-          'x-api-validate': xAPIValidate,
-          Authorization: accessToken
-        } = req.headers;
+      const meAPI = this.getMeAPI();
+
+      if (meAPI.isSecurity()) {
+        const { 'x-api-key': xAPIKey, 'x-api-validate': xAPIValidate, Authorization: accessToken } = req.headers;
 
         // Lấy dữ liệu từ phần body của request
         const { 'x-api-message': xAPIMessage } = req.body;
 
-        const decryptedData = this.meAPI.decryptData(
+        if (!xAPIKey || !xAPIValidate || !xAPIMessage) {
+          // Handle the case when any of the required headers or body values are missing
+          throw new UnauthorizedException('Thông tin không đầy đủ hoặc không chính xác');
+        }
+
+        const decryptedData = meAPI.RequestDecrypt(
           xAPIKey.toString(),
-          xAPIAction.toString(),
-          xAPIClient.toString(),
           xAPIMessage.toString(),
           xAPIValidate.toString(),
-          accessToken.toString()
+          accessToken && accessToken.toString()
         );
 
-        // Thêm dữ liệu đã giải mã từ header và body vào req để controller có thể sử dụng
         req['body'] = decryptedData;
+
+        return next();
       }
-      next();
+
+      return next();
     } catch (error) {
-      res.status(401).json({ error: 'Unauthorized' });
+      throw new UnauthorizedException('Thông tin mã hoá không chính xác');
     }
   }
 }

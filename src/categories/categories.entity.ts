@@ -17,7 +17,9 @@ export class Categories extends Model {
   @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    allowNull: false
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true
   })
   id: number;
 

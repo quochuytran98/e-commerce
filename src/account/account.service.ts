@@ -11,21 +11,28 @@ export class AccountService {
   ) {}
 
   async create(createAccountDto: Partial<Account>): Promise<Account> {
-    return this.accountModel.create(createAccountDto);
+    return await this.accountModel.create(createAccountDto);
   }
-  async findAll(): Promise<Account[]> {
-    return this.accountModel.findAll();
+  async findAll(yourCondition): Promise<Account[]> {
+    const results = await this.accountModel.findAll({
+      where: { yourCondition }
+    });
+
+    const plainResults = results.map((result) => result.get({ plain: true }));
+    return plainResults;
   }
 
   async findOne(where: Partial<Account>): Promise<Account> {
-    return this.accountModel.findOne({ where });
+    const result = await this.accountModel.findOne({ where });
+    const plainResult = result.get({ plain: true });
+    return plainResult;
   }
   async update(id: number, accountData: Partial<Account>): Promise<Account> {
     await this.accountModel.update(accountData, { where: { id } });
-    return this.accountModel.findByPk(id);
+    return await this.accountModel.findByPk(id);
   }
 
   async remove(id: number): Promise<void> {
-    await this.accountModel.destroy({ where: { id } });
+    await await this.accountModel.destroy({ where: { id } });
   }
 }

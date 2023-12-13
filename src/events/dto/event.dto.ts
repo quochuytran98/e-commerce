@@ -1,9 +1,13 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsNumber } from 'class-validator';
 
 export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   eventName: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  categoryId: number;
 
   @IsString()
   @IsNotEmpty()
