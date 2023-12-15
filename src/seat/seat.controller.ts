@@ -15,9 +15,13 @@ export class SeatController {
 
   @MessagePattern('createSeat')
   async createSeats(payload: any): Promise<void> {
-    const showTimeId: number = payload.showTimeId;
-    const eventId: number = payload.eventId;
-    const ticketTypes: TicketTypes[] = payload.ticketTypes;
-    return await this.seatService.createSeats(showTimeId, ticketTypes, eventId);
+    try {
+      const showTimeId: number = payload.showTimeId;
+      const eventId: number = payload.eventId;
+      const ticketTypes: TicketTypes[] = payload.ticketTypes;
+      return await this.seatService.createSeats(showTimeId, ticketTypes, eventId);
+    } catch (error) {
+      this.logger.log(`CREATE_SEAT_ERROR ==> ${JSON.stringify(error)}`);
+    }
   }
 }

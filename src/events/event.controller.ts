@@ -68,8 +68,8 @@ export class EventController {
   }
 
   @Public()
-  @Get()
-  async findMany(): Promise<Event[]> {
-    return this.eventService.findMany();
+  @Post('/public')
+  async findMany(@Body() filter: object, @Body() projection: object, @Body() options: object): Promise<Event[]> {
+    return this.eventService.findMany({ ...filter, state: 'APPROVED' }, projection, options);
   }
 }

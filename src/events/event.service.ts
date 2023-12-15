@@ -31,8 +31,8 @@ export class EventService {
     return this.eventModel.findOneAndUpdate(filter, eventData, { new: true }).exec();
   }
 
-  async findMany(): Promise<Event[]> {
-    return this.eventModel.find().exec();
+  async findMany(filter: object, projection: object, options: object): Promise<Event[]> {
+    return this.eventModel.find(filter, projection, options).exec();
   }
 
   async remove(where: object): Promise<void> {
