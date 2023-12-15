@@ -1,52 +1,52 @@
 // src/Categories/Categories.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Categories } from './Categories.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Category } from './categories.schema';
+import { SequenceService } from '../shared/sequence.service';
 
 @Injectable()
 export class CategoriesService {
   constructor(
-    @InjectModel(Categories)
-    private readonly CategoriesModel: typeof Categories
+    @InjectModel(Category.name)
+    private readonly CategoriesModel: Model<Category>,
+    private readonly sequenceService: SequenceService
   ) {}
 
-  async create(createCategoriesDto: Partial<Categories>): Promise<Categories> {
-    return this.CategoriesModel.create(createCategoriesDto);
+  async create(createCategoriesDto: Partial<Category>): Promise<Category> {
+    const categoryId = await this.sequenceService.getNextId(Category.name);
+    return this.CategoriesModel.create({ id: categoryId, ...createCategoriesDto });
   }
 
-  async update(id: number, updateCategoriesDto: Partial<Categories>): Promise<Categories> {
-    const Categories = await this.CategoriesModel.findByPk(id);
+  async update(id: number, updateCategoriesDto: Partial<Category>): Promise<Category> {
+    const category = await this.CategoriesModel.findByIdAndUpdate(id, updateCategoriesDto, { new: true });
 
-    if (!Categories) {
-      throw new NotFoundException(`Categories with id ${id} not found`);
+    if (!category) {
+      throw new NotFoundException(`Category with id ${id} not found`);
     }
 
-    await Categories.update(updateCategoriesDto);
-
-    return Categories;
+    return category;
   }
 
-  async findOne(id: number): Promise<Categories> {
-    const Categories = await this.CategoriesModel.findByPk(id);
+  async findOne(id: number): Promise<Category> {
+    const category = await this.CategoriesModel.findOne({ id }, { _id: 0 });
 
-    if (!Categories) {
-      throw new NotFoundException(`Categories with id ${id} not found`);
+    if (!category) {
+      throw new NotFoundException(`Category with id ${id} not found`);
     }
 
-    return Categories;
+    return category;
   }
 
-  async findMany(): Promise<Categories[]> {
-    return this.CategoriesModel.findAll();
+  async findMany(): Promise<Category[]> {
+    return this.CategoriesModel.find();
   }
 
   async remove(id: number): Promise<void> {
-    const Categories = await this.CategoriesModel.findByPk(id);
+    const result = await this.CategoriesModel.findByIdAndDelete(id);
 
-    if (!Categories) {
-      throw new NotFoundException(`Categories with id ${id} not found`);
+    if (!result) {
+      throw new NotFoundException(`Category with id ${id} not found`);
     }
-
-    await Categories.destroy();
   }
 }

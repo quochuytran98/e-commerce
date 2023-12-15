@@ -1,15 +1,20 @@
-// src/account/account.module.ts
+// categories.module.ts
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { Categories } from './Categories.entity';
-import { CategoriesController } from './Categories.controller';
-import { CategoriesService } from './Categories.service';
+import { CategoriesController } from './categories.controller';
+import { CategoriesService } from './categories.service';
+import { Category, CategorySchema } from './categories.schema';
+import { MongooseModule } from '@nestjs/mongoose';
 
-import { JwtService } from '@nestjs/jwt';
+import { SharedModule } from '../shared/shared.module';
+
 @Module({
-  imports: [SequelizeModule.forFeature([Categories])],
+  imports: [
+    MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }]),
+    SharedModule
+    // Import other modules if needed
+  ],
   controllers: [CategoriesController],
-  providers: [CategoriesService, JwtService],
-  exports: [CategoriesService]
+  providers: [CategoriesService],
+  exports: [CategoriesService] // Export if CategoriesService should be used in other modules
 })
 export class CategoriesModule {}

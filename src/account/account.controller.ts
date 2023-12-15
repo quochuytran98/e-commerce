@@ -1,7 +1,8 @@
 // src/account/account.controller.ts
 import { Controller, Get, Param, Body, Put, Delete } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { Account } from './account.entity';
+import { Account } from './account.schema';
+// import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('v1/fe/account')
 export class AccountController {
@@ -13,8 +14,8 @@ export class AccountController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Account> {
-    return this.accountService.findOne({ id: +id });
+  findOne(@Param('_id') phone: any): Promise<Account> {
+    return this.accountService.findOne({ phone });
   }
 
   @Put(':id')

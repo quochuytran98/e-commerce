@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class RegisterDto {
   @IsString()
@@ -11,11 +11,6 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(255)
-  location: string;
-
-  @IsString()
-  @IsNotEmpty()
   thumbnail: string;
 
   @IsString()
@@ -25,9 +20,6 @@ export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   description: string;
-
-  @IsString()
-  time: string;
 
   @IsString()
   @IsNotEmpty()

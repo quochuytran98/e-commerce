@@ -1,17 +1,21 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body, Logger, Get, Put, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, Logger, Get, Put, Param, UseGuards, Request, Inject } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { EventService } from './event.service'; // Import EventService
 import { RegisterDto } from './dto/event.dto';
-import { Event } from './event.entity';
-import { RegisterEventResponse } from './interfaces/register-account.interface';
+import { Event } from './event.schema';
+import { RegisterEventResponse } from './interfaces/event.interface';
 import { Public } from '../decorators/public.decorator';
 
+import { MessagePattern, ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '../auth/auth.guard';
+
+import { NAMESPACE } from '../../constants/client.constant';
 @Controller('v1/event')
 export class EventController {
   private readonly logger = new Logger(EventController.name);
   constructor(
+    @Inject(NAMESPACE) private client: ClientProxy,
     private readonly eventService: EventService // Inject EventService
   ) {}
 
@@ -26,7 +30,6 @@ export class EventController {
     };
     try {
       const user = req['user'];
-      console.log('🚀 ~ file: event.controller.ts:29 ~ EventController ~ register ~ user:', user);
       const currentDate = dayjs(new Date());
       const organizationDate = dayjs(registerEventDto.organizationDate);
 
@@ -55,12 +58,13 @@ export class EventController {
 
   @Put(':id/update')
   async update(@Param('id') id: number, @Body() updateEventDto: Partial<Event>): Promise<Event> {
-    return this.eventService.update(id, updateEventDto);
+    return this.eventService.update({}, updateEventDto);
   }
 
+  @MessagePattern('findOneEvent')
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Event> {
-    return this.eventService.findOne({ id: id });
+  async findOne(filter: object): Promise<Event> {
+    return await this.eventService.findOne(filter);
   }
 
   @Public()

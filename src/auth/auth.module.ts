@@ -3,8 +3,11 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { PasswordService } from './password.service';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 // import { AuthService } from './auth.service';
-import { AccountModule } from '../account/account.module'; // Thêm dòng này
+import { AccountModule } from '../account/account.module';
+
+import { NAMESPACE } from '../../constants/client.constant';
 
 @Module({
   imports: [
@@ -15,7 +18,13 @@ import { AccountModule } from '../account/account.module'; // Thêm dòng này
         signOptions: { expiresIn: '24h' } // Customize token expiration as needed
       })
     }),
-    AccountModule // Thêm AccountModule vào đây
+    AccountModule,
+    ClientsModule.register([
+      {
+        name: NAMESPACE,
+        transport: Transport.TCP
+      }
+    ])
   ],
   controllers: [AuthController],
   providers: [PasswordService],

@@ -1,10 +1,12 @@
 // src/app.module.ts
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule /*,MiddlewareConsumer*/ } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { AccountModule } from './account/account.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
+
+// import { SequenceModule } from './sequence/sequence.module'; // Thêm dòng này
 // import { excludeRoutes } from './utils/excludeRoute.util';
 // import { AuthMiddleware } from './middleware/auth.middleware';
 import { CryptoResponseInterceptor } from './middleware/crypto-response.interceptor';
@@ -16,6 +18,9 @@ import { AuthGuard } from './auth/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 
 import { SharedModule } from './shared/shared.module';
+import { PaymentModule } from './payment/payment.module';
+import { SeatModule } from './seat/seat.module';
+import { ShowTimeModule } from './show-time/show-time.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -24,8 +29,11 @@ import { SharedModule } from './shared/shared.module';
     AuthModule,
     EventModule,
     CategoriesModule,
-    SharedModule
-  ], // Thêm AuthModule vào đây
+    SharedModule,
+    PaymentModule,
+    SeatModule,
+    ShowTimeModule
+  ],
   controllers: [],
   providers: [
     {

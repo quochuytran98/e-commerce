@@ -1,5 +1,16 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body, Logger, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Logger,
+  UnauthorizedException,
+  HttpException,
+  HttpStatus,
+  Inject
+} from '@nestjs/common';
+
+import { MessagePattern, ClientProxy } from '@nestjs/microservices';
 import { JwtService } from '@nestjs/jwt';
 import { AccountService } from '../account/account.service'; // Import AccountService
 import { PasswordService } from './password.service';
@@ -8,13 +19,16 @@ import { RegisterAccountResponse } from './interfaces/register-account.interface
 
 import { Public } from '../decorators/public.decorator';
 
+import { NAMESPACE } from '../../constants/client.constant';
 @Controller('v1/auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
   constructor(
+    @Inject(NAMESPACE) private client: ClientProxy,
     private readonly accountService: AccountService, // Inject AccountService
     private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService
+    // @Inject('TICKET') private readonly client: ClientProxy
   ) {}
 
   @Public()
@@ -42,7 +56,10 @@ export class AuthController {
         fullName: accountInfo.fullName
       };
       const token = await this.jwtService.signAsync(infoSign, { secret: 'javainuse-secret-key' });
-
+      // const pattern = { cmd: 'sum' };
+      // const data = [1, 2, 3, 4, 5];
+      // const tesst = await this.client.send<number>(pattern, data).toPromise();
+      // console.log('🚀 ~ file: auth.controller.ts:61 ~ AuthController ~ login ~ tesst:', tesst);
       return { token: token };
     } catch (error) {
       // Xử lý lỗi xác thực
@@ -50,6 +67,8 @@ export class AuthController {
     }
   }
 
+  @MessagePattern({ cmd: 'sum' })
+  @Public()
   @Post('register')
   async register(@Body() registerAccountDto: RegisterDto): Promise<RegisterAccountResponse> {
     const result: RegisterAccountResponse = {

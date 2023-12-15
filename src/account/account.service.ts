@@ -1,38 +1,39 @@
 // src/account/account.service.ts
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Account } from './account.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Account } from './account.schema';
+
+import { SequenceService } from '../shared/sequence.service';
 
 @Injectable()
 export class AccountService {
   constructor(
-    @InjectModel(Account)
-    private readonly accountModel: typeof Account
+    @InjectModel(Account.name)
+    private readonly accountModel: Model<Account>,
+    private readonly sequenceService: SequenceService
   ) {}
 
   async create(createAccountDto: Partial<Account>): Promise<Account> {
-    return await this.accountModel.create(createAccountDto);
-  }
-  async findAll(yourCondition): Promise<Account[]> {
-    const results = await this.accountModel.findAll({
-      where: { yourCondition }
-    });
-
-    const plainResults = results.map((result) => result.get({ plain: true }));
-    return plainResults;
+    const accountId = await this.sequenceService.getNextId(Account.name);
+    const createdAccount = new this.accountModel({ id: accountId, ...createAccountDto });
+    return createdAccount.save();
   }
 
-  async findOne(where: Partial<Account>): Promise<Account> {
-    const result = await this.accountModel.findOne({ where });
-    const plainResult = result.get({ plain: true });
-    return plainResult;
+  async findAll(yourCondition: object): Promise<Account[]> {
+    return this.accountModel.find({ yourCondition }).exec();
   }
+
+  async findOne(filter: object): Promise<Account> {
+    return this.accountModel.findOne(filter).exec();
+  }
+
   async update(id: number, accountData: Partial<Account>): Promise<Account> {
-    await this.accountModel.update(accountData, { where: { id } });
-    return await this.accountModel.findByPk(id);
+    await this.accountModel.updateOne({ _id: id }, accountData).exec();
+    return this.accountModel.findById(id).exec();
   }
 
   async remove(id: number): Promise<void> {
-    await await this.accountModel.destroy({ where: { id } });
+    await this.accountModel.deleteOne({ _id: id }).exec();
   }
 }

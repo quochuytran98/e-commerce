@@ -27,13 +27,11 @@ export class AuthGuard implements CanActivate {
         const accountInfo = await this.accountService.findOne({
           phone
         });
-        if (!accountInfo?.phone) {
+        if (!accountInfo?.id) {
           throw new UnauthorizedException('Authentication failed. Account not found');
         }
         request['user'] = accountInfo;
-        console.log('🚀 ~ file: auth.guard.ts:34 ~ AuthGuard ~ canActivate ~ accountInfo:', accountInfo);
       } catch (error) {
-        console.log('🚀 ~ file: auth.guard.ts:35 ~ AuthGuard ~ canActivate ~ error:', error);
         throw new UnauthorizedException();
       }
     }

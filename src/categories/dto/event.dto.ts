@@ -24,8 +24,4 @@ export class RegisterDto {
 
   @IsString()
   time: string;
-
-  @IsString()
-  @IsNotEmpty()
-  organizationDate: Date;
 }

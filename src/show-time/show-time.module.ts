@@ -1,17 +1,16 @@
-// src/events/event.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { EventController } from './event.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { EventService } from './event.service';
-import { Event, EventSchema } from './event.schema';
+import { ShowTimeService } from './show-time.service';
+import { ShowTimeController } from './show-time.controller';
+import { ShowTime, ShowTimeSchema } from './show-time.schema';
 import { SharedModule } from '../shared/shared.module';
 import { AccountModule } from '../account/account.module';
 
 import { NAMESPACE } from '../../constants/client.constant';
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Event.name, schema: EventSchema }]),
+    MongooseModule.forFeature([{ name: ShowTime.name, schema: ShowTimeSchema }]),
     SharedModule,
     AccountModule,
     ClientsModule.register([
@@ -21,8 +20,7 @@ import { NAMESPACE } from '../../constants/client.constant';
       }
     ])
   ],
-  controllers: [EventController],
-  providers: [EventService],
-  exports: [EventService]
+  providers: [ShowTimeService],
+  controllers: [ShowTimeController]
 })
-export class EventModule {}
+export class ShowTimeModule {}
