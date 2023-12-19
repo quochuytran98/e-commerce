@@ -72,7 +72,7 @@ export class ShowTimeController {
           eventId
         };
         const createdSeat: any = await this.client.send<object>(seatPattern, seatObj).toPromise();
-        this.logger.log('CREATED_SEAT' + JSON.stringify(createdSeat));
+        this.logger.log('CREATED_SEAT ==>' + JSON.stringify(createdSeat));
         response.data = createdShowTime;
         response.code = 200;
         response.message = 'Thành công';

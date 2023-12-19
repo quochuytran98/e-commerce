@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/ticket'),
+    MongooseModule.forRoot('mongodb://tranquochuy.id.vn/ticket'),
     ConfigModule.forRoot() // Load environment variables
   ]
 })
