@@ -22,5 +22,13 @@ jobs:
       run: docker push quochuy98/my_ticket_app:latest
 
     - name: Run Docker container
-      run: docker run -d -p 7000:7000 quochuy98/my_ticket_app:latest
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            docker stop quochuy98/my_ticket_app || true
+            docker rm quochuy98/my_ticket_app || true
+            docker run -p 7000:7000 -d --name quochuy98/my_ticket_app quochuy98/my_ticket_app:latest
 
