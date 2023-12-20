@@ -7,12 +7,19 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag quochuy98/my_ticket_app:$(date +%s)
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Push Docker image to Docker Hub
+      run: docker push quochuy98/my_ticket_app:$(date +%s)
+
+    - name: Run Docker container
+      run: docker run -d 7000:7000 -p quochuy98/my_ticket_app:$(date +%s)
