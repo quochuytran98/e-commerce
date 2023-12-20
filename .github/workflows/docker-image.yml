@@ -22,4 +22,5 @@ jobs:
       run: docker push quochuy98/my_ticket_app:latest
 
     - name: Run Docker container
-      run: docker run -d 7000:7000 -p quochuy98/my_ticket_app:latest
+      run: docker run -d -p 7000:7000 quochuy98/my_ticket_app:latest
+
